@@ -17,12 +17,11 @@ public class BookController {
     private final BookRepository bookRepository;
 
     @Autowired
-    private BookService bookService;
-
-    @Autowired
     public BookController(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
+    @Autowired
+    private BookService bookService;
 
     @GetMapping("/all")
     public ResponseEntity<List<Book>> getAllBooks() {
