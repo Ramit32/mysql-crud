@@ -2,7 +2,10 @@ package com.example.crud.mysql_crud.controller;
 
 import com.example.crud.mysql_crud.entity.Book;
 import com.example.crud.mysql_crud.repository.BookRepository;
+import com.example.crud.mysql_crud.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,23 +17,26 @@ public class BookController {
     private final BookRepository bookRepository;
 
     @Autowired
+    private BookService bookService;
+
+    @Autowired
     public BookController(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
 
-    @GetMapping
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    @GetMapping("/all")
+    public ResponseEntity<List<Book>> getAllBooks() {
+        return new ResponseEntity<>(bookService.getAllBooks(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
+        return new ResponseEntity<Book>(bookService.getBookById(id), HttpStatus.OK);
     }
 
     @PostMapping
     public Book addBook(@RequestBody Book book) {
         return bookRepository.save(book);
-    }
-
-    @GetMapping("/{id}")
-    public Book getBookById(@PathVariable Long id) {
-        return bookRepository.findById(id).orElse(null);
     }
 
     @PutMapping("/{id}")
