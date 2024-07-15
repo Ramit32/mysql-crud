@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/books")
@@ -29,26 +30,39 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
-        return new ResponseEntity<Book>(bookService.getBookById(id), HttpStatus.OK);
-    }
+    public ResponseEntity<?> getBookById(@PathVariable Long id) {
+        Optional<Book> book;
 
-    @PostMapping
-    public Book addBook(@RequestBody Book book) {
-        return bookRepository.save(book);
-    }
-
-    @PutMapping("/{id}")
-    public Book updateBook(@PathVariable Long id, @RequestBody Book updatedBook) {
-        if (bookRepository.existsById(id)) {
-            updatedBook.setId(id);
-            return bookRepository.save(updatedBook);
+        try{
+            book =bookService.getBookById(id);
+        }catch(Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
-        return null;
+        return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteBook(@PathVariable Long id) {
-        bookRepository.deleteById(id);
+    @PostMapping("/saveBook")
+    public ResponseEntity<Book> saveBook(@RequestBody Book book) {
+        return new ResponseEntity<Book>(bookService.save(book),HttpStatus.CREATED);
+    }
+
+
+    @PutMapping("/updateBook")
+    public ResponseEntity<?> updateBook(@RequestBody Book book) {
+        try{
+            return new ResponseEntity<>(bookService.update(book),HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteBook(@PathVariable Long id) {
+        try{
+            bookService.deleteBook(id);
+        }catch(Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("the entity has been deleted",HttpStatus.OK);
     }
 }
