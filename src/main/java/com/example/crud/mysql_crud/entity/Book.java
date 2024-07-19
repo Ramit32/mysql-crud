@@ -17,12 +17,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @JsonIgnoreProperties(value = "true")
 public class Book {
-
-
-   @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String title;
     private String author;
-
+    private  Boolean isDeleted =Boolean.FALSE;
 }
